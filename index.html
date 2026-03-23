@@ -8,7 +8,7 @@
 </head>
 <body>
 
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop preload="auto">
         <source src="spring-day.mp3" type="audio/mpeg">
     </audio>
 
@@ -27,21 +27,25 @@
     </div>
 
     <script>
-        // 1. Play music on the very first tap/click anywhere on the screen
-        let musicPlayed = false;
-        function playMusic() {
-            if (!musicPlayed) {
-                let audio = document.getElementById('bgMusic');
-                audio.play().catch(e => console.log("Audio play requires user interaction"));
-                musicPlayed = true;
+        const audio = document.getElementById('bgMusic');
+        let hasPlayed = false;
+
+        // Bulletproof audio starter
+        function forcePlayAudio() {
+            if (!hasPlayed) {
+                audio.play().then(() => {
+                    hasPlayed = true;
+                }).catch(err => {
+                    console.log("Browser still blocking audio:", err);
+                });
             }
         }
-        
-        // Listeners for mobile and desktop taps
-        document.addEventListener('click', playMusic);
-        document.addEventListener('touchstart', playMusic);
 
-        // 2. Make the "No" button run away
+        // We attach the music trigger to the entire window AND the buttons
+        window.addEventListener('click', forcePlayAudio);
+        window.addEventListener('touchstart', forcePlayAudio);
+
+        // Make the "No" button run away
         const noBtn = document.getElementById('noButton');
         
         function moveButton() {
@@ -55,16 +59,20 @@
             noBtn.style.position = 'fixed';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
+            
+            // Also try playing music when they try to touch the No button
+            forcePlayAudio(); 
         }
 
         noBtn.addEventListener('mouseover', moveButton);
         noBtn.addEventListener('touchstart', function(e) {
-            e.preventDefault(); // Stops the tap from registering as a click
+            e.preventDefault(); 
             moveButton();
         });
 
-        // 3. Switch to Jimin screen when "Yes" is clicked
+        // Switch to Jimin screen when "Yes" is clicked
         function showSuccess() {
+            forcePlayAudio(); // Try playing one last time if they click Yes
             document.getElementById('question-screen').style.display = 'none';
             document.getElementById('success-screen').style.display = 'block';
         }
