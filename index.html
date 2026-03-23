@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>For Pearly</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="spring-day.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="question-screen">
+        <img src="kuromi.png" alt="Kuromi" class="main-img">
+        <h1>Pearly will you please forgive me?</h1>
+        <div class="buttons">
+            <button class="yes-button" onclick="showSuccess()">Yes</button>
+            <button class="no-button" id="noButton">No</button>
+        </div>
+    </div>
+
+    <div class="container hidden" id="success-screen">
+        <img src="jimin.jpg" alt="Jimin" class="success-img">
+        <h2>Thank you so much for forgiving me, Jimin appreciates you 🙏🏻❤️</h2>
+    </div>
+
+    <script>
+        // 1. Play music on the very first tap/click anywhere on the screen
+        let musicPlayed = false;
+        function playMusic() {
+            if (!musicPlayed) {
+                let audio = document.getElementById('bgMusic');
+                audio.play().catch(e => console.log("Audio play requires user interaction"));
+                musicPlayed = true;
+            }
+        }
+        
+        // Listeners for mobile and desktop taps
+        document.addEventListener('click', playMusic);
+        document.addEventListener('touchstart', playMusic);
+
+        // 2. Make the "No" button run away
+        const noBtn = document.getElementById('noButton');
+        
+        function moveButton() {
+            const padding = 20; 
+            const maxX = window.innerWidth - noBtn.offsetWidth - padding;
+            const maxY = window.innerHeight - noBtn.offsetHeight - padding;
+            
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+            
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Stops the tap from registering as a click
+            moveButton();
+        });
+
+        // 3. Switch to Jimin screen when "Yes" is clicked
+        function showSuccess() {
+            document.getElementById('question-screen').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
